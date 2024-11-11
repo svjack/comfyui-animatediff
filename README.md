@@ -28,6 +28,85 @@ Example workflow:
 
 Workflow: [lora.json](https://github.com/ArtVentureX/comfyui-animatediff/blob/main/workflows/lora.json)
 
+# README
+
+## Overview
+
+This README provides instructions on how to run a script that generates an animated GIF using the ComfyUI framework. The script downloads necessary model checkpoints and VAE (Variational Autoencoder) files, sets up the environment, and executes the workflow to produce the final GIF.
+
+## Prerequisites
+
+Ensure you have Python installed on your system. The script is designed to run in a script manner.
+
+## Steps to Run the Script
+
+### 1. Transpile the Lora JSON
+
+First, transpile the Lora JSON file using the following command:
+
+```bash
+python -m comfy_script.transpile lora.json
+```
+
+### 2. Download Required Files
+
+Next, download the necessary model checkpoints and VAE files using `wget`:
+
+```bash
+wget https://cdn-lfs.hf.co/repos/80/a9/80a9efd8e3732d097f2777edd953760ce288e2370fb8a8bb4803c0f8f29dca40/69ed0f5fef82b110aca51bcab73b21104242bc65d6ab4b8b2a2a94d31cad1bf0?response-content-disposition=attachment%3B+filename*%3DUTF-8%27%27mm_sd_v15_v2.ckpt%3B+filename%3D%22mm_sd_v15_v2.ckpt%22%3B&Expires=1731594908&Policy=eyJTdGF0ZW1lbnQiOlt7IkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTczMTU5NDkwOH19LCJSZXNvdXJjZSI6Imh0dHBzOi8vY2RuLWxmcy5oZi5jby9yZXBvcy84MC9hOS84MGE5ZWZkOGUzNzMyZDA5N2YyNzc3ZWRkOTUzNzYwY2UyODhlMjM3MGZiOGE4YmI0ODAzYzBmOGYyOWRjYTQwLzY5ZWQwZjVmZWY4MmIxMTBhY2E1MWJjYWI3M2IyMTEwNDI0MmJjNjVkNmFiNGI4YjJhMmE5NGQzMWNhZDFiZjA%7EcmVzcG9uc2UtY29udGVudC1kaXNwb3NpdGlvbj0qIn1dfQ__&Signature=utZR6oramTmejBIeaoomyLRLCyQUPqmLld6x21YBVF33688kEQaDnWmEFBv-2xV3NB7QKvSbo9Zf6l%7EBg%7EmwbdKUiVJLsKXuBRWlcCfamrs9DtxvDB5Nn7qqlTfklNf53t5AyUZ79fKICoHhdA7p8Zp%7EBxZZLQfb3SPyhAnr3lL6UvqaMTiX48dHJMSamHDKRkkuUVPlO7fCCK9Ftr8rbhG64tPIJcD9ga2HY05709dbd4oZXWy9Om9hPMYgkBUeRpbnMx8WnT2buG65b9bUF1wkwKipl%7EkJrnRiPDoSUH-K%7E8lW%7EJWWV9qpjb2riOen15LOO6Zp0oWOJx8ilrtUVg__&Key-Pair-Id=K3RPWS32NSSJCE -O mm_sd_v15_v2.ckpt
+
+wget https://cdn-lfs.hf.co/repos/80/a9/80a9efd8e3732d097f2777edd953760ce288e2370fb8a8bb4803c0f8f29dca40/70ce8b9057b173b9249c48aca5d66c8aa1d8aaa040fda394e50e37f3e278195e?response-content-disposition=attachment%3B+filename*%3DUTF-8%27%27v2_lora_ZoomIn.ckpt%3B+filename%3D%22v2_lora_ZoomIn.ckpt%22%3B&Expires=1731594847&Policy=eyJTdGF0ZW1lbnQiOlt7IkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTczMTU5NDg0N319LCJSZXNvdXJjZSI6Imh0dHBzOi8vY2RuLWxmcy5oZi5jby9yZXBvcy84MC9hOS84MGE5ZWZkOGUzNzMyZDA5N2YyNzc3ZWRkOTUzNzYwY2UyODhlMjM3MGZiOGE4YmI0ODAzYzBmOGYyOWRjYTQwLzcwY2U4YjkwNTdiMTczYjkyNDljNDhhY2E1ZDY2YzhhYTFkOGFhYTA0MGZkYTM5NGU1MGUzN2YzZTI3ODE5NWU%7EcmVzcG9uc2UtY29udGVudC1kaXNwb3NpdGlvbj0qIn1dfQ__&Signature=tqt%7EFoj-qAgfh%7EiTWo%7EriZ5%7EsWQafaw4vBCx651ZIfhnb-fBKkBEuTCYWcK7pyhC1KPlbp2bSfrzXQ-v%7En1BxxN8NRZOKO%7EkqaB7YEWXDNwQnxa6yyym-Unap0oaMnpdc9WLlRDKLgLLzBxVdVVW9kXl2%7EgOJYhMnMtZ-8fq9AKQHkLPRAB1q-DAWIm14CAcKTroQs3h3eIDEmMeTmowMZmxuiLeJtZOyjMjevY33983A3OT87SnmdbzlI2rLrR5YswphaX5szzngvmxo9I1VTPPhv%7EX5yDk8wQC17Nt458yHqjJ6a4r0Ry0ek4meS1tEYdAobnnuo0BZ-1ofc0Euw__&Key-Pair-Id=K3RPWS32NSSJCE -O v2_lora_ZoomIn.ckpt
+
+wget https://cdn-lfs.hf.co/repos/ec/ee/eceee26c5834d8a75cf04eeb17dfc06d1d5fe1d80c2f19520b148c11e2e98c45/735e4c3a447a3255760d7f86845f09f937809baa529c17370d83e4c3758f3c75?response-content-disposition=inline%3B+filename*%3DUTF-8%27%27vae-ft-mse-840000-ema-pruned.safetensors%3B+filename%3D%22vae-ft-mse-840000-ema-pruned.safetensors%22%3B&Expires=1731598817&Policy=eyJTdGF0ZW1lbnQiOlt7IkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTczMTU5ODgxN319LCJSZXNvdXJjZSI6Imh0dHBzOi8vY2RuLWxmcy5oZi5jby9yZXBvcy9lYy9lZS9lY2VlZTI2YzU4MzRkOGE3NWNmMDRlZWIxN2RmYzA2ZDFkNWZlMWQ4MGMyZjE5NTIwYjE0OGMxMWUyZTk4YzQ1LzczNWU0YzNhNDQ3YTMyNTU3NjBkN2Y4Njg0NWYwOWY5Mzc4MDliYWE1MjljMTczNzBkODNlNGMzNzU4ZjNjNzU%7EcmVzcG9uc2UtY29udGVudC1kaXNwb3NpdGlvbj0qIn1dfQ__&Signature=M8TehAX6q%7EM0cAM%7EzEmOZ2P2gsL%7ELTclcM1p2eNERQ9u9nwvVQRb4mAO8NUlvoEhBUejJe6WWR7KpWM%7ElKoRXil2O8X2UOKD1ZUh6jTtIZHUKEPMlVDD4gDeKKZejl4a4khPVF1m9az6g0GbQeqFqDBotyC7%7EjB0lssO7a5GyqwUYWBnjnTV1O49F20Z3o4tvNVTZciidYWBKZpdOY5tP-Xq1Xvk3W3wlVuUocHUzyT7-88qHCwgsRRn5b4FxjnzIdJTqAreaaChBQCkM-CjzAU0jWDirACno1d9fCdea5lEfYLlLYA68tR4afmVFy7wQyVOuP2inzsaTeOzQ02oGA__&Key-Pair-Id=K3RPWS32NSSJCE -O vae-ft-mse-840000-ema-pruned.safetensors
+```
+
+### 3. Copy Files to Appropriate Directories
+
+Copy the downloaded files to their respective directories within the ComfyUI structure:
+
+```bash
+cp mm_sd_v15_v2.ckpt ComfyUI/custom_nodes/comfyui-animatediff/models
+cp v2_lora_ZoomIn.ckpt ComfyUI/custom_nodes/comfyui-animatediff/loras
+cp comfyui_models/checkpoints/majicmixRealistic_v7.safetensors ComfyUI/models/checkpoints
+cp vae-ft-mse-840000-ema-pruned.safetensors ComfyUI/models/vae
+```
+
+### 4. Execute the Workflow
+
+Run the following Python script to execute the workflow and generate the GIF:
+
+```python
+from comfy_script.runtime import *
+load()
+from comfy_script.runtime.nodes import *
+
+with Workflow():
+    motion_lora_stack = AnimateDiffLoraLoader('v2_lora_ZoomIn.ckpt', 1, None)
+    motion_module = AnimateDiffModuleLoader('mm_sd_v15_v2.ckpt', motion_lora_stack)
+    model, clip, _ = CheckpointLoaderSimple("majicmixRealistic_v7.safetensors")
+    conditioning = CLIPTextEncode('photo of coastline, rocks, storm weather, wind, waves, lightning, 8k uhd, dslr, soft lighting, high quality, film grain, Fujifilm XT3', clip)
+    conditioning2 = CLIPTextEncode('blur, haze, deformed iris, deformed pupils, semi-realistic, cgi, 3d, render, sketch, cartoon, drawing, anime, mutated hands and fingers, deformed, distorted, disfigured, poorly drawn, bad anatomy, wrong anatomy, extra limb, missing limb, floating limbs, disconnected limbs, mutation, mutated, ugly, disgusting, amputation', clip)
+    latent = EmptyLatentImage(512, 512, 1)
+    latent = AnimateDiffSampler(motion_module, 'default', 14, model, 45987230, 25, 7.5, 'ddim', 'ddim_uniform', conditioning, conditioning2, latent, 1, None)
+    vae = VAELoader('vae-ft-mse-840000-ema-pruned.safetensors')
+    image = VAEDecode(latent, vae)
+    AnimateDiffCombine(image, 8, 0, False, 'AnimateDiff', 'image/gif', False)
+```
+
+### 5. Locate the Generated GIF
+
+The generated GIF will be located in the `ComfyUI/temp` directory. You can list the contents of this directory to verify the presence of the GIF:
+
+```bash
+ls ComfyUI/temp
+```
+
+![AnimateDiff_00001_](https://github.com/user-attachments/assets/f855dbee-a891-4039-93c3-647ae5ff221e)
+
+## Conclusion
+
+This script automates the process of downloading necessary models, setting up the environment, and executing the workflow to generate an animated GIF using the ComfyUI framework. Ensure all prerequisites are met before running the script.
+
 Samples:
 
 <table>

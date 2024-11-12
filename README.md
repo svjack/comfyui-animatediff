@@ -103,6 +103,103 @@ ls ComfyUI/temp
 
 ![AnimateDiff_00001_](https://github.com/user-attachments/assets/f855dbee-a891-4039-93c3-647ae5ff221e)
 
+# AnimateDiff Workflow README (For simple motion tuned generation)
+
+This README provides an overview of the AnimateDiff workflow, which is designed to generate animated images using the ComfyUI framework. The workflow includes two main scripts: one for the original workflow and another for a workflow that incorporates a LoRA (Low-Rank Adaptation) model.
+
+## Prerequisites
+
+Before running the workflow, ensure that you have the following files in the appropriate directories:
+
+1. **Motion Module**: `v3_sd15_mm.ckpt` should be placed in the `ComfyUI/custom_nodes/comfyui-animatediff/models` directory.
+2. **Checkpoint Model**: `majicmixRealistic_v7.safetensors` should be available in the expected location.
+3. **VAE Model**: `vae-ft-mse-840000-ema-pruned.safetensors` should be available in the expected location.
+4. **LoRA Model**: `500_man_running_temporal_unet.safetensors` should be available in the expected location if you plan to use the LoRA-enhanced workflow.
+
+## Original Workflow
+
+The original workflow generates an animated image of a man running. The steps are as follows:
+
+1. **Load the Motion Module**: The `AnimateDiffModuleLoader` node loads the motion module from `v3_sd15_mm.ckpt`.
+2. **Load the Checkpoint Model**: The `CheckpointLoaderSimple` node loads the `majicmixRealistic_v7.safetensors` model.
+3. **Encode Text Prompts**: Two text prompts are encoded using the `CLIPTextEncode` node:
+   - The first prompt describes a man running.
+   - The second prompt includes negative conditions to avoid undesirable features.
+4. **Generate Latent Image**: An empty latent image is created using the `EmptyLatentImage` node.
+5. **Sample the Latent Image**: The `AnimateDiffSampler` node samples the latent image using the motion module and the encoded text prompts.
+6. **Load the VAE Model**: The `VAELoader` node loads the `vae-ft-mse-840000-ema-pruned.safetensors` model.
+7. **Decode the Latent Image**: The `VAEDecode` node decodes the latent image into a visual format.
+8. **Combine and Export**: The `AnimateDiffCombine` node combines the frames into an animated GIF.
+
+### Script
+
+```python
+from comfy_script.runtime import *
+load()
+from comfy_script.runtime.nodes import *
+with Workflow():
+    motion_module = AnimateDiffModuleLoader('v3_sd15_mm.ckpt')
+    model, clip, _ = CheckpointLoaderSimple("majicmixRealistic_v7.safetensors")
+    conditioning = CLIPTextEncode('a man is running', clip)
+    conditioning2 = CLIPTextEncode('blur, haze, deformed iris, deformed pupils, semi-realistic, cgi, 3d, render, sketch, cartoon, drawing, anime, mutated hands and fingers, deformed, distorted, disfigured, poorly drawn, bad anatomy, wrong anatomy, extra limb, missing limb, floating limbs, disconnected limbs, mutation, mutated, ugly, disgusting, amputation', clip)
+    latent = EmptyLatentImage(512, 512, 1)
+    latent = AnimateDiffSampler(motion_module, 'default', 14, model, 45987230, 25, 7.5, 'ddim', 'ddim_uniform', conditioning, conditioning2, latent, 1, None)
+    vae = VAELoader('vae-ft-mse-840000-ema-pruned.safetensors')
+    image = VAEDecode(latent, vae)
+    AnimateDiffCombine(image, 8, 0, False, 'AnimateDiff', 'image/gif', False)
+```
+
+![AnimateDiff_00010_](https://github.com/user-attachments/assets/87f2f60b-66fc-4930-a678-16ed2e5ba6a3)
+
+
+## Workflow with LoRA (Temporal Directory)
+
+This workflow is similar to the original but incorporates a LoRA model to enhance the temporal consistency of the animation.
+
+1. **Load the LoRA Model**: The `AnimateDiffLoraLoader` node loads the `500_man_running_temporal_unet.safetensors` LoRA model.
+2. **Load the Motion Module**: The `AnimateDiffModuleLoader` node loads the motion module from `v3_sd15_mm.ckpt`, incorporating the LoRA model.
+3. **Load the Checkpoint Model**: The `CheckpointLoaderSimple` node loads the `majicmixRealistic_v7.safetensors` model.
+4. **Encode Text Prompts**: A single text prompt is encoded using the `CLIPTextEncode` node, describing a man running on the road.
+5. **Generate Latent Image**: An empty latent image is created using the `EmptyLatentImage` node.
+6. **Sample the Latent Image**: The `AnimateDiffSampler` node samples the latent image using the motion module and the encoded text prompt.
+7. **Load the VAE Model**: The `VAELoader` node loads the `vae-ft-mse-840000-ema-pruned.safetensors` model.
+8. **Decode the Latent Image**: The `VAEDecode` node decodes the latent image into a visual format.
+9. **Combine and Export**: The `AnimateDiffCombine` node combines the frames into an animated GIF.
+
+### Script
+
+```python
+from comfy_script.runtime import *
+load()
+from comfy_script.runtime.nodes import *
+with Workflow():
+    motion_lora_stack = AnimateDiffLoraLoader('500_man_running_temporal_unet.safetensors', 1, None)
+    motion_module = AnimateDiffModuleLoader('v3_sd15_mm.ckpt', motion_lora_stack)
+    model, clip, _ = CheckpointLoaderSimple("majicmixRealistic_v7.safetensors")
+    conditioning = CLIPTextEncode('a man is running on the road.', clip)
+    conditioning2 = CLIPTextEncode('', clip)
+    latent = EmptyLatentImage(512, 512, 1)
+    latent = AnimateDiffSampler(motion_module, 'default', 14, model, 45987230, 25, 7.5, 'ddim', 'ddim_uniform', conditioning, conditioning2, latent, 1, None)
+    vae = VAELoader('vae-ft-mse-840000-ema-pruned.safetensors')
+    image = VAEDecode(latent, vae)
+    AnimateDiffCombine(image, 8, 0, False, 'AnimateDiff', 'image/gif', False)
+```
+
+![AnimateDiff_00009_](https://github.com/user-attachments/assets/1bf45bce-b34a-4138-9573-fa0300327905)
+
+
+## Running the Workflow
+
+To run the workflow, ensure that all the required files are in the correct directories and execute the script in your ComfyUI environment. The output will be an animated GIF of a man running, with or without the LoRA enhancement depending on the script you choose to run.
+
+## Notes
+
+- Ensure that the paths to the models and files are correct.
+- The workflow is designed to be run in a ComfyUI environment with the necessary nodes and dependencies installed.
+- The LoRA-enhanced workflow is expected to produce more temporally consistent animations.
+
+For any issues or further customization, refer to the ComfyUI documentation or community resources.
+
 ## Conclusion
 
 This script automates the process of downloading necessary models, setting up the environment, and executing the workflow to generate an animated GIF using the ComfyUI framework. Ensure all prerequisites are met before running the script.

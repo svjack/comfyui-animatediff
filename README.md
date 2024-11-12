@@ -67,7 +67,7 @@ Copy the downloaded files to their respective directories within the ComfyUI str
 ```bash
 cp mm_sd_v15_v2.ckpt ComfyUI/custom_nodes/comfyui-animatediff/models
 cp v2_lora_ZoomIn.ckpt ComfyUI/custom_nodes/comfyui-animatediff/loras
-cp comfyui_models/checkpoints/majicmixRealistic_v7.safetensors ComfyUI/models/checkpoints
+cp work/comfyui_models/checkpoints/majicmixRealistic_v7.safetensors ComfyUI/models/checkpoints
 cp vae-ft-mse-840000-ema-pruned.safetensors ComfyUI/models/vae
 ```
 

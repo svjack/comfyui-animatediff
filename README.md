@@ -105,6 +105,7 @@ ls ComfyUI/temp
 
 # AnimateDiff Workflow README (For simple motion tuned generation)
 # From (https://github.com/svjack/AnimateDiff-MotionDirector)
+## (https://huggingface.co/svjack/AnimateDiff_run_motion_single_v0)
 
 This README provides an overview of the AnimateDiff workflow, which is designed to generate animated images using the ComfyUI framework. The workflow includes two main scripts: one for the original workflow and another for a workflow that incorporates a LoRA (Low-Rank Adaptation) model.
 
